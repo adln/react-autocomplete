@@ -2,7 +2,8 @@ import React from 'react';
 import { Suggestions } from './Suggestions';
 /**
  * A react component that displays an input with autocomplete functionnality
- * @author Adlene Gharbi
+ * @author Adlene Gharbi `adlen025[at]gmail.com`
+ * 
  */
 
 export class Autocomplete extends React.Component {
@@ -32,7 +33,7 @@ export class Autocomplete extends React.Component {
      * if the input is empty, remove cached items from the state (that will lead to hiding the suggestions panel)
      */
     if (search !== '') {
-      this.queryBingData(search);
+      this.queryGoogleData(search);
     } else {
       this.setState({
         items: []
@@ -84,23 +85,23 @@ export class Autocomplete extends React.Component {
       );
   }
   /**
-   * Fetch data from Bing's API 
-   * @param {String} search 
+   * Fetch data from Bing's API
+   * @param {String} search
    */
   queryBingData(search) {
-      /**
-       * Since Bing API returns CORS error while fetching it from client,
-       * we use the CORS_PROXY declared in the constructor to bypass it
-       */
-    fetch(this.CORS_PROXY + 'https://api.bing.com/osjson.aspx?query=' + search)
     /**
-     * Parsing result's object to json
+     * Since Bing API returns CORS error while fetching it from client,
+     * we use the CORS_PROXY declared in the constructor to bypass it
      */
+    fetch(this.CORS_PROXY + 'https://api.bing.com/osjson.aspx?query=' + search)
+      /**
+       * Parsing result's object to json
+       */
       .then(result => result.json())
       .then(
-          /**
-           * add the 8 first items to state
-           */
+        /**
+         * add the 8 first items to state
+         */
         result => {
           this.setState({
             items: result[1].splice(0, 8)
@@ -108,12 +109,42 @@ export class Autocomplete extends React.Component {
         },
         error => {
           this.setState({
-              error
-          })
+            error
+          });
         }
       );
   }
 
+  /**
+   * Fetch data from Google's API
+   * @param {String} search
+   */
+  queryGoogleData(search) {
+    /**
+     * Since Google's API returns CORS error while fetching it,
+     * we use the CORS_PROXY declared in the constructor to bypass it
+     */
+    fetch(this.CORS_PROXY + 'http://suggestqueries.google.com/complete/search?&client=firefox&q=' + search)
+      /**
+       * Parsing result's object to json
+       */
+      .then(result => result.json())
+      .then(
+        /**
+         * add the 8 first items to state
+         */
+        result => {
+          this.setState({
+            items: result[1].splice(0, 8)
+          });
+        },
+        error => {
+          this.setState({
+            error
+          });
+        }
+      );
+  }
 
   /**
    * Render the input
