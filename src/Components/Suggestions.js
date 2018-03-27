@@ -67,7 +67,7 @@ export class Suggestions extends React.Component {
      */
     return this.props.items.map((i, index) => {
       return (
-        <li key={i} className={this.state.selected === index ? 'selected' : ''}>
+        <li key={index + new Date().getTime()} className={this.state.selected === index ? 'selected' : ''}>
           <a>{i}</a>
         </li>
       );
