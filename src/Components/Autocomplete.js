@@ -29,10 +29,15 @@ export class Autocomplete extends React.Component {
   onChange(e) {
     // input value
     let search = e.target.value;
-    this.setState({
-      search: search
-    });
-    this.fetchData();
+    this.setState(
+      {
+        search: search
+      },
+      () => {
+        // fetch data after search query in the state is changed
+        this.fetchData();
+      }
+    );
   }
 
   fetchData() {
@@ -42,6 +47,7 @@ export class Autocomplete extends React.Component {
      */
     let search = this.state.search;
     if (search !== '') {
+      console.log('not empty:', search);
       /**
        * fetch data from engine selected from the Select list
        * @default 'google'
@@ -61,6 +67,7 @@ export class Autocomplete extends React.Component {
           break;
       }
     } else {
+      console.log('empty');
       this.setState({
         items: []
       });
@@ -77,13 +84,12 @@ export class Autocomplete extends React.Component {
         engine: e.target.value
       },
       () => {
-        console.log(this.state, this.state.engine);
+        /**
+         * re-run fetch data on the newly selected engine
+         */
         this.fetchData(this.state.search);
       }
     );
-    /** re-run fetch data on the newly selected engine
-     *
-     */
   }
   /**
    * Fetch autocomplete data from Github's API to query repositories
