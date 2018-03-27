@@ -1,7 +1,8 @@
 import React from 'react';
-
+import { Suggestions } from './Suggestions';
 /**
  * A react component that displays an input with autocomplete functionnality
+ * @author Adlene Gharbi
  */
 
 export class Autocomplete extends React.Component {
@@ -24,28 +25,37 @@ export class Autocomplete extends React.Component {
   onChange(e) {
     // input value
     let search = e.target.value;
-
-    this.fetchGithubData(search);
+    /**
+     * Get data if there is a querty in the input,
+     * if the input is empty, remove cached items from the state (that will lead to hiding the suggestions panel)
+     */
+    if(search !== ''){
+        this.queryGithubData(search);
+    }else{
+        this.setState({
+            items: []
+        });
+    }
   }
   /**
    * Fetch autocomplete data from Github's API to query repositories
    * @param {String} search
    */
   queryGithubData(search) {
-      /**
-       * Query the github API
-       * 
-       * @type Promise
-       * @returns result or error
-       */
+    /**
+     * Query the github API
+     *
+     * @type Promise
+     * @returns result or error
+     */
     fetch(
       'https://api.github.com/search/repositories?q=' +
         search +
         '&sort=stars&order=desc'
     )
-        /**
-         * Parsing result object to json
-         */
+      /**
+       * Parsing result object to json
+       */
       .then(res => res.json())
       .then(
         result => {
@@ -60,7 +70,6 @@ export class Autocomplete extends React.Component {
              * add results to state
              */
             this.setState({
-              
               items: res
             });
           }
@@ -73,7 +82,7 @@ export class Autocomplete extends React.Component {
         }
       );
   }
- 
+
   /**
    * Render the input
    */
@@ -87,8 +96,8 @@ export class Autocomplete extends React.Component {
           className="validate"
           onChange={this.onChange.bind(this)}
         />
+        <Suggestions items={this.state.items} />
       </div>
     );
   }
 }
-
